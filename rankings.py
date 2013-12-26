@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Osama Khalid 2011. Released under AGPLv3+.
-# Please wirte your feedback to [[User_talk:OsamaK]].
-
-# This script updates Alexa rankings depending on a list on
-# [[User:OsamaK/AlexaBot.js]]. The syntax of the list is:
-#     "Example (website) example.com"
-# It could optionally include the "local" flag to fetch the local
-# Alexa ranking (the one beside the 'Global ranking'):
-#     "Example (website) example.com local"
+# Based off the original script by Osama Khalid
+# Updated and added on to by Dor Green
+# This script updates the SimilarWeb ranking in the infobox website template
 
 import codecs
 import re
@@ -183,14 +177,16 @@ class RankingBot(object):
 class SimilarWebBot(RankingBot):
     FIELD_NAME = 'similarweb'
     METRIC_NAME = 'SimilarWeb'
-
+    KEY = None
 
     def get_human_version(self, url):
         return 'http://www.similarweb.com/website/' + url
 
-    def get_rankings(self, site_url, key='b6d8bb9dab3ba57c48bf024cd426b4a7'):
+    def get_rankings(self, site_url):
+        if not self.KEY:
+            raise NotImplementedError('Requires an api key. Insert in SimilarWebBot class')
         try:
-            req = urllib2.urlopen('http://api.similarweb.com/Site/%s/v1/traffic?Format=JSON&UserKey=%s' %(site_url, key))
+            req = urllib2.urlopen('http://api.similarweb.com/Site/%s/v1/traffic?Format=JSON&UserKey=%s' %(site_url, self.KEY))
             if req:
                 resp = req.read()
                 similiar_web_rankings = json.loads(resp)
